@@ -6,8 +6,23 @@ function App() {
   const [cart, setCart] = useState([]);
 
   const handleAddToCart = (product) => {
-    setCart([...cart, product]);
-  };
+  setCart((prevCart) => {
+    const existingItem = prevCart.find((item) => item.id === product.id);
+
+    if (existingItem) {
+      // update quantity
+      return prevCart.map((item) =>
+        item.id === product.id
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      );
+    } else {
+      // add new item
+      return [...prevCart, { ...product, quantity: 1 }];
+    }
+  });
+};
+
 
   return (
     <div className="min-h-screen bg-gray-100 text-gray-800">
@@ -35,16 +50,12 @@ function App() {
             {cart.length === 0 ? (
               <p className="text-gray-500 italic">Your cart is empty.</p>
             ) : (
-              <ul className="space-y-3">
+              <ul className="list-disc list-inside space-y-2">
                 {cart.map((item, index) => (
-                  <li
-                    key={index}
-                    className="flex justify-between items-center border-b pb-2"
-                  >
-                    <span>{item.name}</span>
-                    <span className="text-indigo-600 font-medium">
-                      ₹{item.price}
-                    </span>
+                  <li key={index} className="text-base">
+                    <span className="font-medium">{item.name}</span>{" "}
+                    <span className="text-sm text-gray-600">(x{item.quantity})</span> -{" "}
+                    <span className="font-semibold text-gray-800">₹{item.price * item.quantity}</span>
                   </li>
                 ))}
               </ul>
