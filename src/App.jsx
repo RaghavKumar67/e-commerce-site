@@ -1,64 +1,91 @@
-import { useState } from "react";
 import ProductList from "./components/ProductList";
 import products from "./data/products";
+import { useCart } from "./context/CartContext";
 
 function App() {
-  const [cart, setCart] = useState([]);
-
-  const handleAddToCart = (product) => {
-  setCart((prevCart) => {
-    const existingItem = prevCart.find((item) => item.id === product.id);
-
-    if (existingItem) {
-      // update quantity
-      return prevCart.map((item) =>
-        item.id === product.id
-          ? { ...item, quantity: item.quantity + 1 }
-          : item
-      );
-    } else {
-      // add new item
-      return [...prevCart, { ...product, quantity: 1 }];
-    }
-  });
-};
-
+  const {
+    cart,
+    handleAddToCart,
+    handleRemoveFromCart,
+    increaseQuantity,
+    decreaseQuantity,
+  } = useCart();
 
   return (
     <div className="min-h-screen bg-gray-100 text-gray-800">
-      {/* Header */}
       <header className="bg-white shadow p-6 mb-8">
         <h1 className="text-4xl font-bold text-center text-black-700">
           🛍️ Product Catalog
         </h1>
       </header>
 
-      {/* Main content grid */}
       <main className="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Product Section */}
+        {/* Product List Section */}
         <section className="md:col-span-2">
-          <ProductList products={products} onAddToCart={handleAddToCart} />
+          <ProductList products={products} />
         </section>
 
-        {/* Cart Section */}
+        {/* Cart Sidebar */}
         <aside className="md:col-span-1">
           <div className="bg-white rounded-lg shadow p-6 sticky top-6">
             <h2 className="text-xl font-semibold mb-4 flex justify-between items-center text-green-700">
-              🛒 Cart <span className="text-sm text-gray-500">{cart.length} item{cart.length !== 1 && "s"}</span>
+              🛒 Cart{" "}
+              <span className="text-sm text-gray-500">
+                {cart.length} item{cart.length !== 1 && "s"}
+              </span>
             </h2>
 
             {cart.length === 0 ? (
               <p className="text-gray-500 italic">Your cart is empty.</p>
             ) : (
-              <ul className="list-disc list-inside space-y-2">
-                {cart.map((item, index) => (
-                  <li key={index} className="text-base">
-                    <span className="font-medium">{item.name}</span>{" "}
-                    <span className="text-sm text-gray-600">(x{item.quantity})</span> -{" "}
-                    <span className="font-semibold text-gray-800">₹{item.price * item.quantity}</span>
-                  </li>
-                ))}
-              </ul>
+              <>
+                <ul className="space-y-4">
+                  {cart.map((item) => (
+                    <li key={item.id} className="flex flex-col gap-2 border-b pb-2">
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <span className="font-medium">{item.name}</span>{" "}
+                          <span className="text-sm text-gray-600">₹{item.price}</span>
+                        </div>
+                        <button
+                          onClick={() => handleRemoveFromCart(item.id)}
+                          className="text-red-600 text-sm hover:underline"
+                        >
+                          🗑 Remove
+                        </button>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => decreaseQuantity(item.id)}
+                          className="bg-gray-200 px-2 py-1 rounded hover:bg-gray-300"
+                        >
+                          ➖
+                        </button>
+                        <span className="px-2">{item.quantity}</span>
+                        <button
+                          onClick={() => increaseQuantity(item.id)}
+                          className="bg-gray-200 px-2 py-1 rounded hover:bg-gray-300"
+                        >
+                          ➕
+                        </button>
+                        <span className="ml-auto font-semibold">
+                          ₹{item.price * item.quantity}
+                        </span>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+
+                {/* 💰 Total Price */}
+                <div className="mt-4 text-right font-bold text-lg text-black">
+                  Total: ₹
+                  {cart.reduce(
+                    (total, item) => total + item.price * item.quantity,
+                    0
+                  )}
+                </div>
+              </>
             )}
           </div>
         </aside>
