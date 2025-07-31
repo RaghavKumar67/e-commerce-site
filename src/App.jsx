@@ -11,6 +11,10 @@ function App() {
     decreaseQuantity,
   } = useCart();
 
+
+  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+
+
   return (
     <div className="min-h-screen bg-gray-100 text-gray-800">
       <header className="bg-white shadow p-6 mb-8">
@@ -34,6 +38,10 @@ function App() {
                 {cart.length} item{cart.length !== 1 && "s"}
               </span>
             </h2>
+
+            <p className="text-sm text-gray-600 mb-2">
+              🧾 Total Items: <span className="font-semibold">{totalItems}</span>
+            </p>
 
             {cart.length === 0 ? (
               <p className="text-gray-500 italic">Your cart is empty.</p>
