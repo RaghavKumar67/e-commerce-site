@@ -1,7 +1,6 @@
 import ProductList from "./components/ProductList";
 import products from "./data/products";
 import { useCart } from "./context/CartContext";
-
 function App() {
   const {
     cart,
@@ -16,6 +15,7 @@ function App() {
 
 
   return (
+    
     <div className="min-h-screen bg-gray-100 text-gray-800">
       <header className="bg-white shadow p-6 mb-8">
         <h1 className="text-4xl font-bold text-center text-black-700">
